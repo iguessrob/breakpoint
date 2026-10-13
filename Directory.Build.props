@@ -4,6 +4,6 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <LangVersion>latest</LangVersion>
     <Deterministic>true</Deterministic>
-    <Version>0.1.7</Version><Product>Breakpoint</Product><Company>Breakpoint</Company><Description>Owner-controlled internet hours and shutdown warnings.</Description>
+    <Version>0.1.8</Version><Product>Breakpoint</Product><Company>Breakpoint</Company><Description>Owner-controlled internet hours and shutdown warnings.</Description>
   </PropertyGroup>
 </Project>

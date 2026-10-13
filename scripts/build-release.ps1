@@ -19,6 +19,10 @@ foreach($project in @('Breakpoint.Desktop','Breakpoint.Service')){
 Move-Item -LiteralPath (Join-Path $payload 'Breakpoint.Desktop.exe') -Destination (Join-Path $payload 'Breakpoint.exe')
 Copy-Item -LiteralPath (Join-Path $projectRoot 'src\Breakpoint.Desktop\Assets\breakpoint.ico') -Destination $payload
 Copy-Item -LiteralPath (Join-Path $projectRoot 'packaging\README.txt') -Destination $payload
+foreach($policy in @(@('PRIVACY.md','PrivacyPolicy.txt'),@('TERMS.md','TermsAndConditions.txt'))){
+    $text=[IO.File]::ReadAllText((Join-Path $projectRoot $policy[0])) -replace '(?m)^#{1,6} ',''
+    [IO.File]::WriteAllText((Join-Path $payload $policy[1]),$text,[Text.UTF8Encoding]::new($true))
+}
 $licenses=Join-Path $payload 'licenses'
 New-Item -ItemType Directory -Force -Path $licenses | Out-Null
 Copy-Item -LiteralPath (Join-Path $projectRoot 'src\Breakpoint.Desktop\Assets\Fonts\Dinamo-Licensing-Terms.pdf') -Destination $licenses
@@ -33,7 +37,7 @@ foreach($pack in @('microsoft.netcore.app.runtime.win-x64','microsoft.windowsdes
 if($LASTEXITCODE -ne 0){throw 'Installer compilation failed.'}
 # The marker exists only in the portable preview. The installer lists its files explicitly.
 Set-Content -LiteralPath (Join-Path $payload 'portable-preview.flag') -Value 'This portable package always uses simulated enforcement.' -Encoding UTF8
-Compress-Archive -LiteralPath $payload -DestinationPath (Join-Path $release 'Breakpoint-Portable-Preview-0.1.7-win-x64.zip') -CompressionLevel Optimal
+Compress-Archive -LiteralPath $payload -DestinationPath (Join-Path $release 'Breakpoint-Portable-Preview-0.1.8-win-x64.zip') -CompressionLevel Optimal
 Get-ChildItem -LiteralPath $release -File | Where-Object {$_.Name -ne 'SHA256SUMS.txt'} | ForEach-Object {$releaseFile=$_;((Get-FileHash -LiteralPath $releaseFile.FullName -Algorithm SHA256).Hash.ToLowerInvariant())+'  '+$releaseFile.Name} | Set-Content -LiteralPath (Join-Path $release 'SHA256SUMS.txt') -Encoding UTF8
 Set-Content -LiteralPath (Join-Path $projectRoot 'outputs\release\LATEST.txt') -Value $release
 Write-Host "Release: $release"

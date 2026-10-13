@@ -7,8 +7,8 @@
 [Setup]
 AppId={{AF2F378F-8C97-41CE-BD67-7D62F690A871}
 AppName=Breakpoint
-AppVersion=0.1.7
-AppPublisher=Breakpoint
+AppVersion=0.1.8
+AppPublisher=iguessrob
 DefaultDirName={autopf}\Breakpoint
 DisableDirPage=yes
 DefaultGroupName=Breakpoint
@@ -18,7 +18,7 @@ ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 MinVersion=10.0.22000
 OutputDir={#OutputDir}
-OutputBaseFilename=Breakpoint-Setup-0.1.7-win-x64
+OutputBaseFilename=Breakpoint-Setup-0.1.8-win-x64
 SetupIconFile={#PayloadDir}\breakpoint.ico
 UninstallDisplayIcon={app}\Breakpoint.exe
 UninstallLogging=yes
@@ -29,6 +29,8 @@ CloseApplications=yes
 RestartApplications=no
 UsePreviousTasks=yes
 SetupLogging=yes
+LicenseFile={#PayloadDir}\TermsAndConditions.txt
+InfoBeforeFile={#PayloadDir}\PrivacyPolicy.txt
 
 [Tasks]
 Name: desktopicon; Description: "Create a desktop shortcut"; Flags: unchecked
@@ -39,10 +41,16 @@ Source: "{#PayloadDir}\Breakpoint.exe"; DestDir: "{app}"; Flags: ignoreversion; 
 Source: "{#PayloadDir}\README.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#PayloadDir}\licenses\*"; DestDir: "{app}\licenses"; Flags: ignoreversion
 
+Source: "{#PayloadDir}\PrivacyPolicy.txt"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#PayloadDir}\TermsAndConditions.txt"; DestDir: "{app}"; Flags: ignoreversion
+
 [Icons]
 Name: "{group}\Breakpoint"; Filename: "{app}\Breakpoint.exe"
 Name: "{group}\Breakpoint safe preview"; Filename: "{app}\Breakpoint.exe"; Parameters: "--preview"
 Name: "{autodesktop}\Breakpoint"; Filename: "{app}\Breakpoint.exe"; Tasks: desktopicon
+
+Name: "{group}\Privacy policy"; Filename: "{app}\PrivacyPolicy.txt"
+Name: "{group}\Terms and conditions"; Filename: "{app}\TermsAndConditions.txt"
 
 [Registry]
 Root: HKLM; Subkey: "Software\Microsoft\Windows\CurrentVersion\Run"; ValueType: string; ValueName: "Breakpoint"; ValueData: """{app}\Breakpoint.exe"" --background"; Flags: uninsdeletevalue

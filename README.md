@@ -74,3 +74,7 @@ The 0.1.7 build passed 204 automated checks. Shutdown and reboot recovery checks
 - `scripts` contains build, preview, and installation commands.
 
 Read [usage and recovery instructions](docs/getting-started.md) or the [architecture notes](docs/ARCHITECTURE.md) for more detail.
+
+## Privacy and terms
+
+Read the [privacy policy](PRIVACY.md) and [terms and conditions](TERMS.md) before installing. The installer displays both documents and includes offline copies in the installed folder. The publisher is iguessrob; contact is through [GitHub Issues](https://github.com/iguessrob/breakpoint/issues).
