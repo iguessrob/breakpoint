@@ -1,0 +1,4 @@
+{
+  "version":"0.2.0",
+  "configurations":[{"name":"Breakpoint preview (no enforcement)","type":"coreclr","request":"launch","preLaunchTask":"Breakpoint: build and check","program":"${workspaceFolder}/outputs/Breakpoint/Breakpoint.Desktop.exe","args":["--preview"],"cwd":"${workspaceFolder}","console":"internalConsole"}]
+}

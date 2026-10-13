@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="src/Breakpoint.Core/Breakpoint.Core.csproj" />
+  <Project Path="src/Breakpoint.Service/Breakpoint.Service.csproj" />
+  <Project Path="src/Breakpoint.Desktop/Breakpoint.Desktop.csproj" />
+  <Project Path="tests/Breakpoint.Checks/Breakpoint.Checks.csproj" />
+  <Project Path="tests/Breakpoint.DesktopChecks/Breakpoint.DesktopChecks.csproj" />
+</Solution>

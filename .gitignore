@@ -1,0 +1,20 @@
+# Build products and local working files
+**/bin/
+**/obj/
+work/
+outputs/
+.vs/
+.idea/
+*.user
+*.suo
+*.log
+.env
+.env.*
+*.pfx
+*.p12
+state.json
+appearance.txt
+island-preferences.json
+# Repairs for this local installation
+scripts/repair-*.ps1
+scripts/update-island-countdown.ps1

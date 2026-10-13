@@ -1,0 +1,7 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    { "label": "Breakpoint: build and check", "type": "shell", "command": "powershell", "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "${workspaceFolder}/scripts/build.ps1"], "group": {"kind":"build", "isDefault":true}, "problemMatcher":"$msCompile" },
+    { "label": "Breakpoint: preview", "type": "shell", "command": "powershell", "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "${workspaceFolder}/scripts/preview.ps1"], "dependsOn":"Breakpoint: build and check", "problemMatcher":[] }
+  ]
+}
