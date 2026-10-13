@@ -1,4 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup><OutputType>WinExe</OutputType><TargetFramework>net10.0-windows</TargetFramework><UseWPF>true</UseWPF><UseWindowsForms>true</UseWindowsForms><ImplicitUsings>disable</ImplicitUsings><ApplicationManifest>app.manifest</ApplicationManifest><ApplicationIcon>Assets\breakpoint.ico</ApplicationIcon><NoWarn>$(NoWarn);WFO0003</NoWarn></PropertyGroup>
   <ItemGroup><ProjectReference Include="../Breakpoint.Core/Breakpoint.Core.csproj" /></ItemGroup>
-<ItemGroup><Page Remove="MainWindow.xaml"/><Compile Remove="MainWindow.xaml.cs"/><Compile Remove="OwnerDialog.cs"/><Compile Remove="ScheduleEditorDialog.cs"/></ItemGroup><ItemGroup><Resource Include="Assets\breakpoint.ico"/><Resource Include="Assets\breakpoint-tray.ico"/></ItemGroup></Project>
+<ItemGroup><Page Remove="MainWindow.xaml"/><Compile Remove="MainWindow.xaml.cs"/><Compile Remove="OwnerDialog.cs"/><Compile Remove="ScheduleEditorDialog.cs"/></ItemGroup><ItemGroup><Resource Include="Assets\breakpoint.ico"/><Resource Include="Assets\breakpoint-tray.ico"/></ItemGroup><ItemGroup><Resource Include="Assets\Fonts\*.ttf"/></ItemGroup>
+  <Target Name="RequireArealFonts" BeforeTargets="PrepareForBuild">
+    <Error Condition="!Exists('Assets\Fonts\ABCAreal-Regular.ttf') Or !Exists('Assets\Fonts\ABCAreal-Medium.ttf') Or !Exists('Assets\Fonts\ABCAreal-Bold.ttf')" Text="Supply the licensed Areal desktop fonts as described in docs/typography.md before building."/>
+  </Target>
+</Project>

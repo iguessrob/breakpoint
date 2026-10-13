@@ -7,7 +7,7 @@
 [Setup]
 AppId={{AF2F378F-8C97-41CE-BD67-7D62F690A871}
 AppName=Breakpoint
-AppVersion=0.1.5
+AppVersion=0.1.7
 AppPublisher=Breakpoint
 DefaultDirName={autopf}\Breakpoint
 DisableDirPage=yes
@@ -18,7 +18,7 @@ ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 MinVersion=10.0.22000
 OutputDir={#OutputDir}
-OutputBaseFilename=Breakpoint-Setup-0.1.5-win-x64
+OutputBaseFilename=Breakpoint-Setup-0.1.7-win-x64
 SetupIconFile={#PayloadDir}\breakpoint.ico
 UninstallDisplayIcon={app}\Breakpoint.exe
 UninstallLogging=yes

@@ -74,7 +74,11 @@ internal static class Program
             catch(TargetInvocationException failure){rejected=failure.InnerException is IOException;}
             Check(rejected,"service identity rejects "+invalid.Label);
         }
-        var app=new App();app.InitializeComponent();var output=args[0];Directory.CreateDirectory(output);
+        var app=new App();app.InitializeComponent();
+        var family=(FontFamily)typeof(IslandWindow).Assembly.GetType("Breakpoint.Desktop.AppTypography")!.GetProperty("Family",BindingFlags.NonPublic|BindingFlags.Static)!.GetValue(null)!;
+        foreach(var weight in new[]{FontWeights.Normal,FontWeights.Medium,FontWeights.Bold})
+            Check(new Typeface(family,FontStyles.Normal,weight,FontStretches.Normal).TryGetGlyphTypeface(out var glyph)&&glyph.FamilyNames.Values.Contains("ABC Areal")&&glyph.Weight==weight,"packaged Areal resolves real "+weight+" glyphs without a system font install");
+        var output=args[0];Directory.CreateDirectory(output);
         var now=new DateTimeOffset(2026,10,13,12,0,0,TimeSpan.Zero);
         var current=new Status { Configured=true,Preview=true,Phase="Scheduled",Now=now,Schedule=new Schedule { Enabled=true,ZoneId="Singapore Standard Time" },Next=new Breakpoint.Core.Window("sample",now.AddHours(2),now.AddHours(10)) };
         var requests=new List<Request>();
@@ -159,7 +163,7 @@ internal static class Program
             {
                 for(var reopen=0;reopen<8;reopen++){trayMenu.Show(new System.Drawing.Point(-10000,-10000));Pump(25);trayMenu.Close();}
                 Check(true,"tray menu can reopen repeatedly without a drawing exception in "+theme);
-                trayMenu.RefreshAppearance();trayMenu.Show(new System.Drawing.Point(-10000,-10000));Pump(80);
+                Check(trayMenu.Font.Name=="ABC Areal","tray menu uses the private Areal font");trayMenu.RefreshAppearance();trayMenu.Show(new System.Drawing.Point(-10000,-10000));Pump(80);
                 using var menuImage=new System.Drawing.Bitmap(trayMenu.Width,trayMenu.Height);
                 trayMenu.DrawToBitmap(menuImage,new System.Drawing.Rectangle(0,0,trayMenu.Width,trayMenu.Height));
                 menuImage.Save(Path.Combine(output,"tray-menu-"+theme.ToLowerInvariant()+".png"),System.Drawing.Imaging.ImageFormat.Png);trayMenu.Close();
@@ -228,7 +232,16 @@ internal static class Program
             Check(requests.Last().Schedule!.Start=="07:30"&&requests.Last().Schedule!.WindowKind=="Allowed","curfew sends internet-on Start and allowed-window policy");
             Click(island,"dismiss-notification");Capture(island,output,"integrated-schedule-"+suffix);
             island.RequestClose();Shell(island).RaiseEvent(new MouseEventArgs(Mouse.PrimaryDevice,0){RoutedEvent=Mouse.MouseLeaveEvent});island.ShowNotification("Curfew begins in 5 minutes");
-            Check(island.CurrentView=="notify"&&Shell(island).Width==300,"notification enlarges small pill");Capture(island,output,"integrated-notification-"+suffix);
+            Check(island.CurrentView=="notify"&&Shell(island).Width<300&&Shell(island).Height==38,"short notification fits its message in a compact pill");Capture(island,output,"integrated-notification-"+suffix);
+            island.ShowNotification("No curfew to skip.");Layout(island);var shortNoticeWidth=Shell(island).Width;
+            var compactText=(TextBlock)typeof(IslandWindow).GetField("capText",BindingFlags.NonPublic|BindingFlags.Instance)!.GetValue(island)!;
+            var mark=(FrameworkElement)typeof(IslandWindow).GetField("logo",BindingFlags.NonPublic|BindingFlags.Instance)!.GetValue(island)!;
+            var gap=compactText.TranslatePoint(new Point(0,0),Shell(island)).X-mark.TranslatePoint(new Point(mark.ActualWidth,0),Shell(island)).X;
+            Check(gap>=6&&gap<=17,"notification text sits beside the speaking logo without an empty spacer");Capture(island,output,"compact-notification-"+suffix);
+            island.ShowNotification("Your curfew was saved. Internet will turn off at the selected End time.");Layout(island);
+            Check(Shell(island).Width>shortNoticeWidth&&Shell(island).Width<=360&&compactText.ActualHeight>20&&Shell(island).Height>=compactText.ActualHeight+20,"long pill notification wraps and grows without clipping");Capture(island,output,"wrapped-notification-"+suffix);
+            island.ShowNotification("No curfew to skip.");Layout(island);
+            Check(Shell(island).Width==shortNoticeWidth&&Shell(island).Height==38,"replacing a long notification restores compact dimensions");
             Shell(island).RaiseEvent(new MouseEventArgs(Mouse.PrimaryDevice,0){RoutedEvent=Mouse.MouseEnterEvent});clock.Advance(7000);TickNotice(island);Check(island.CurrentView=="notify","hover pauses notification expiry");
             Shell(island).RaiseEvent(new MouseEventArgs(Mouse.PrimaryDevice,0){RoutedEvent=Mouse.MouseLeaveEvent});clock.Advance(5999);TickNotice(island);Check(island.CurrentView=="notify","notification lasts six unhovered seconds");clock.Advance(2);TickNotice(island);Check(island.CurrentView=="idle","notification returns to tiny pill");
             island.OpenAppearance();Layout(island);Capture(island,output,"integrated-appearance-"+suffix);island.OpenOwner();Layout(island);Capture(island,output,"integrated-owner-"+suffix);

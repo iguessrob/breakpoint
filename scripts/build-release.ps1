@@ -1,4 +1,4 @@
-﻿param([string]$Compiler,[switch]$SkipChecks)
+param([string]$Compiler,[switch]$SkipChecks)
 $ErrorActionPreference='Stop'
 $projectRoot=Split-Path -Parent $PSScriptRoot
 $env:DOTNET_CLI_HOME=Join-Path $projectRoot 'work\dotnet-home'
@@ -21,6 +21,7 @@ Copy-Item -LiteralPath (Join-Path $projectRoot 'src\Breakpoint.Desktop\Assets\br
 Copy-Item -LiteralPath (Join-Path $projectRoot 'packaging\README.txt') -Destination $payload
 $licenses=Join-Path $payload 'licenses'
 New-Item -ItemType Directory -Force -Path $licenses | Out-Null
+Copy-Item -LiteralPath (Join-Path $projectRoot 'src\Breakpoint.Desktop\Assets\Fonts\Dinamo-Licensing-Terms.pdf') -Destination $licenses
 foreach($pack in @('microsoft.netcore.app.runtime.win-x64','microsoft.windowsdesktop.app.runtime.win-x64')){
     $packRoot=Get-ChildItem -LiteralPath (Join-Path $env:NUGET_PACKAGES $pack) -Directory | Sort-Object { [Version]$_.Name } -Descending | Select-Object -First 1
     foreach($name in @('LICENSE','LICENSE.TXT','THIRD-PARTY-NOTICES.TXT')){
@@ -32,7 +33,7 @@ foreach($pack in @('microsoft.netcore.app.runtime.win-x64','microsoft.windowsdes
 if($LASTEXITCODE -ne 0){throw 'Installer compilation failed.'}
 # The marker exists only in the portable preview. The installer lists its files explicitly.
 Set-Content -LiteralPath (Join-Path $payload 'portable-preview.flag') -Value 'This portable package always uses simulated enforcement.' -Encoding UTF8
-Compress-Archive -LiteralPath $payload -DestinationPath (Join-Path $release 'Breakpoint-Portable-Preview-0.1.5-win-x64.zip') -CompressionLevel Optimal
+Compress-Archive -LiteralPath $payload -DestinationPath (Join-Path $release 'Breakpoint-Portable-Preview-0.1.7-win-x64.zip') -CompressionLevel Optimal
 Get-ChildItem -LiteralPath $release -File | Where-Object {$_.Name -ne 'SHA256SUMS.txt'} | ForEach-Object {$releaseFile=$_;((Get-FileHash -LiteralPath $releaseFile.FullName -Algorithm SHA256).Hash.ToLowerInvariant())+'  '+$releaseFile.Name} | Set-Content -LiteralPath (Join-Path $release 'SHA256SUMS.txt') -Encoding UTF8
 Set-Content -LiteralPath (Join-Path $projectRoot 'outputs\release\LATEST.txt') -Value $release
 Write-Host "Release: $release"

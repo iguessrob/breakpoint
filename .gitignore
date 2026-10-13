@@ -18,3 +18,6 @@ island-preferences.json
 # Repairs for this local installation
 scripts/repair-*.ps1
 scripts/update-island-countdown.ps1
+
+# Licensed Areal files are supplied locally, never committed.
+src/Breakpoint.Desktop/Assets/Fonts/

@@ -21,6 +21,7 @@ public sealed partial class IslandWindow : Window
     private readonly Button cap;
     private readonly Grid capRow;
     private readonly System.Windows.Shapes.Path logo;
+    private readonly System.Windows.Shapes.Path speechCue;
     private readonly TextBlock brand = new(), capText = new(), noticeText = new();
     private readonly Border notice;
     private readonly StackPanel content = new();
@@ -64,7 +65,7 @@ public sealed partial class IslandWindow : Window
         WindowStyle = WindowStyle.None; AllowsTransparency = true; Background = Brushes.Transparent;
         UseLayoutRounding = true; SnapsToDevicePixels = true;
         TextOptions.SetTextFormattingMode(this,TextFormattingMode.Display);
-        FontFamily = new FontFamily("Segoe UI"); FontSize = 13; SetResourceReference(ForegroundProperty,"Ink");
+        FontFamily = AppTypography.Family; FontSize = 13; SetResourceReference(ForegroundProperty,"Ink");
         Width = 360; Height = Math.Min(ExpandedHeightLimit,SystemParameters.WorkArea.Height-24); ResizeMode = ResizeMode.NoResize;
         shell = new Border { Width = 56, Height = 28, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Top,
             CornerRadius = new CornerRadius(14), BorderThickness = new Thickness(1) };
@@ -79,6 +80,9 @@ public sealed partial class IslandWindow : Window
         brand.Text = "breakpoint"; brand.FontSize = 13; brand.TextWrapping=TextWrapping.NoWrap; brand.VerticalAlignment = VerticalAlignment.Center; Grid.SetColumn(brand,1); row.Children.Add(brand);
         capText.Text = "Checking"; capText.FontSize = 11; capText.VerticalAlignment = VerticalAlignment.Center; capText.TextWrapping = TextWrapping.NoWrap;
         capText.TextTrimming = TextTrimming.CharacterEllipsis; Grid.SetColumn(capText,2); row.Children.Add(capText);
+        speechCue=new System.Windows.Shapes.Path { Data=Geometry.Parse("M4,0 L0,3 L4,6 Z"),Width=4,Height=6,Stretch=Stretch.Fill,Margin=new Thickness(0,0,6,0),VerticalAlignment=VerticalAlignment.Center,Opacity=0.65,Visibility=Visibility.Collapsed,IsHitTestVisible=false };
+        speechCue.SetResourceReference(System.Windows.Shapes.Shape.FillProperty,"Accent");Grid.SetColumn(speechCue,1);row.Children.Add(speechCue);
+        AutomationProperties.SetLiveSetting(capText,AutomationLiveSetting.Polite);
         cap = Button(row,()=> { if(view is "idle" or "peek" or "notify") OpenSettings(); else RequestClose(); },"cap");
         cap.HorizontalContentAlignment = HorizontalAlignment.Left; cap.Padding = new Thickness(10,0,10,0); cap.MinHeight = 0; cap.Height = 26;
         cap.Background = Brushes.Transparent; cap.BorderThickness = new Thickness(0); AutomationProperties.SetName(cap,"Open Breakpoint controls"); stack.Children.Add(cap);
@@ -325,20 +329,34 @@ public sealed partial class IslandWindow : Window
     }
     private string OnlineColor=>OnlineSeconds<=300?"Warning":"Accent";
     private double IdleWidth=>latest?.Active is not null?100:HasOnlineCountdown?(OnlineCountdown.Length>8?132:OnlineSeconds>=3600?118:100):56;
+    private Size NotificationSize()
+    {
+        // Measure the actual message at the current font/DPI; long messages wrap within the island.
+        capText.Measure(new Size(301,double.PositiveInfinity));
+        return new Size(Math.Min(360,Math.Max(100,Math.Ceiling(capText.DesiredSize.Width)+59)),Math.Max(38,Math.Ceiling(capText.DesiredSize.Height)+20));
+    }
     private void Header()
     {
         bool idle=view=="idle",notify=view=="notify",logoOnly=view=="idle"&&latest?.Active is null&&!HasOnlineCountdown;
         brand.Visibility=idle||notify?Visibility.Collapsed:Visibility.Visible;capText.Visibility=logoOnly?Visibility.Collapsed:Visibility.Visible;
         logo.SetResourceReference(System.Windows.Shapes.Shape.FillProperty,latest?.Active is not null?"Warning":HasOnlineCountdown?OnlineColor:idle?"Dim":"Accent");
-        logo.Margin=new Thickness(0,0,logoOnly?0:9,0);Grid.SetColumnSpan(logo,logoOnly?3:1);logo.HorizontalAlignment=logoOnly?HorizontalAlignment.Center:HorizontalAlignment.Left;
-        cap.Height=idle?26:notify?52:44;cap.Padding=new Thickness(idle?10:18,0,idle?10:18,0);
-        var targetWidth=idle?IdleWidth:view=="peek"?240:notify?300:360;
-        capRow.Width=targetWidth-2-cap.Padding.Left-cap.Padding.Right;
+        logo.Margin=new Thickness(0,0,logoOnly?0:notify?6:9,0);Grid.SetColumnSpan(logo,logoOnly?3:1);logo.HorizontalAlignment=logoOnly?HorizontalAlignment.Center:HorizontalAlignment.Left;
+        speechCue.Visibility=notify?Visibility.Visible:Visibility.Collapsed;
+        capRow.ColumnDefinitions[1].Width=notify?GridLength.Auto:new GridLength(1,GridUnitType.Star);
+        capRow.ColumnDefinitions[2].Width=notify?new GridLength(1,GridUnitType.Star):GridLength.Auto;
+        capText.TextWrapping=notify?TextWrapping.Wrap:TextWrapping.NoWrap;
+        capText.TextTrimming=notify?TextTrimming.None:TextTrimming.CharacterEllipsis;
+        capText.HorizontalAlignment=notify?HorizontalAlignment.Left:HorizontalAlignment.Stretch;
+        cap.Padding=new Thickness(idle?10:notify?14:18,0,idle?10:notify?14:18,0);
         capText.FontSize=idle?(logoOnly?11:13):notify?12:13;capText.Text=notify?message:latest?.Active is not null?ActiveLabel():HasOnlineCountdown?OnlineCountdown:NextTime();
         if(IsPreview&&IsExpanded)capText.Text="Preview · "+capText.Text;
-        capText.SetResourceReference(TextBlock.ForegroundProperty,notify||latest?.Active is not null?"Warning":HasOnlineCountdown?OnlineColor:idle?"Ink":"Dim");
+        var notificationSize=notify?NotificationSize():default;
+        cap.Height=idle?26:notify?notificationSize.Height-2:44;
+        var targetWidth=idle?IdleWidth:view=="peek"?240:notify?notificationSize.Width:360;
+        capRow.Width=targetWidth-2-cap.Padding.Left-cap.Padding.Right;
+        capText.SetResourceReference(TextBlock.ForegroundProperty,notify?"Ink":latest?.Active is not null?"Warning":HasOnlineCountdown?OnlineColor:idle?"Ink":"Dim");
         cap.BorderThickness=idle||notify?new Thickness(0):new Thickness(0,0,0,1);
-        AutomationProperties.SetName(cap,$"Breakpoint. {(latest?.Active is not null?(latest.Shutdown=="Countdown"?"Shutdown in "+Countdown():"Internet off"):HasOnlineCountdown?"Internet off in "+OnlineCountdown:"Curfew "+capText.Text)}. Activate to open settings.");
+        AutomationProperties.SetName(cap,notify?$"Breakpoint. {message}. Activate to open settings.":$"Breakpoint. {(latest?.Active is not null?(latest.Shutdown=="Countdown"?"Shutdown in "+Countdown():"Internet off"):HasOnlineCountdown?"Internet off in "+OnlineCountdown:"Curfew "+capText.Text)}. Activate to open settings.");
         noticeText.Text=message;notice.Visibility=notification&&IsExpanded?Visibility.Visible:Visibility.Collapsed;
     }
     private void SetView(string next,FrameworkElement? body,bool animate=true)
@@ -372,8 +390,8 @@ public sealed partial class IslandWindow : Window
     }
     private void Fit(bool animate=true)
     {
-        var width=view=="idle"?IdleWidth:view=="peek"?240:view=="notify"?300:360;
-        var height=view=="idle"?28d:view=="notify"?54d:0;
+        var width=view=="idle"?IdleWidth:view=="peek"?240:view=="notify"?NotificationSize().Width:360;
+        var height=view=="idle"?28d:view=="notify"?NotificationSize().Height:0;
         if(height==0){var body=page.Content as FrameworkElement;body?.Measure(new Size(content.Width,double.PositiveInfinity));notice.Measure(new Size(width-2,double.PositiveInfinity));contentPadding.Padding=new Thickness(view=="peek"?16:20,notification&&IsExpanded?14:view=="peek"?10:18,view=="peek"?16:20,view=="peek"?10:18);height=Math.Min(Height,Math.Ceiling(cap.Height+(body?.DesiredSize.Height??0)+contentPadding.Padding.Top+contentPadding.Padding.Bottom+2+(notice.Visibility==Visibility.Visible?notice.DesiredSize.Height:0))+1);}
         scroll.MaxHeight=Math.Max(0,height-cap.Height-2-(notice.Visibility==Visibility.Visible?notice.DesiredSize.Height:0));++transition;
         shell.CornerRadius=new CornerRadius(view=="idle"?14:view=="peek"?20:24);
@@ -394,7 +412,7 @@ public sealed partial class IslandWindow : Window
         if(view is "idle" or "peek" or "notify")SetView("notify",null);else{Header();Fit();}
         if(firstNotice&&IsExpanded&&!check&&!ReduceMotion&&SystemParameters.ClientAreaAnimation)
             notice.BeginAnimation(OpacityProperty,new DoubleAnimation(0,1,TimeSpan.FromMilliseconds(160)));
-        AutomationProperties.SetName(shell,text);var peer=System.Windows.Automation.Peers.UIElementAutomationPeer.FromElement(noticeText);peer?.RaiseAutomationEvent(System.Windows.Automation.Peers.AutomationEvents.LiveRegionChanged);
+        AutomationProperties.SetName(shell,text);var peer=System.Windows.Automation.Peers.UIElementAutomationPeer.FromElement(IsExpanded?noticeText:capText);peer?.RaiseAutomationEvent(System.Windows.Automation.Peers.AutomationEvents.LiveRegionChanged);
     }
     private void AdvanceNotification()
     {

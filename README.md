@@ -23,7 +23,7 @@ Hover over the pill for details. Click it to open Curfew, Appearance, or Owner a
 
 ## Install
 
-[Download the Windows 11 x64 installer](https://github.com/iguessrob/breakpoint/releases/download/v0.1.5/Breakpoint-Setup-0.1.5-win-x64.exe).
+[Download the Windows 11 x64 installer](https://github.com/iguessrob/breakpoint/releases/download/v0.1.7/Breakpoint-Setup-0.1.7-win-x64.exe).
 
 Run the installer and approve the Windows administrator prompt. Open Breakpoint from Start, set an owner PIN, and save the recovery code somewhere private. Choose your Start and End times, turn Curfew on, and save with your PIN.
 
@@ -39,7 +39,7 @@ Use the private recovery code in Owner access to reset a forgotten PIN. Uninstal
 
 ## Build and preview
 
-Development requires Windows 11 and the .NET 10 SDK. Clone this repository, open PowerShell in its folder, and run:
+Development requires Windows 11 and the .NET 10 SDK. Clone this repository and add the licensed [Areal desktop fonts](docs/typography.md). Then open PowerShell in its folder and run:
 
 ```powershell
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/build.ps1
@@ -62,7 +62,7 @@ A Windows service owns the schedule, firewall rules, and shutdown requests. Clos
 
 The service stores PIN and recovery-code hashes in a protected ProgramData folder. Authentication delays increase after repeated wrong attempts. A Windows administrator can still stop or uninstall the service.
 
-The 0.1.5 build passed 193 automated checks. Shutdown and reboot recovery checks use fake enforcement and simulated restarts. Coverage of actual power cycles, VPNs, WSL, Hyper-V, and managed firewall policies still needs testing on disposable Windows machines.
+The 0.1.7 build passed 204 automated checks. Shutdown and reboot recovery checks use fake enforcement and simulated restarts. Coverage of actual power cycles, VPNs, WSL, Hyper-V, and managed firewall policies still needs testing on disposable Windows machines.
 
 ## Source layout
 

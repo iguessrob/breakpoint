@@ -15,7 +15,7 @@ public sealed class BreakpointTrayMenu : Forms.ContextMenuStrip
     public BreakpointTrayMenu(bool preview,Func<bool> visible,Action open,Action toggle,Action skip,Action notification,Action warning,Action quit)
     {
         islandVisible=visible;Renderer=appearance;ShowImageMargin=false;ShowCheckMargin=false;
-        Font=new Font("Segoe UI",10);Padding=new Forms.Padding(7);AutoSize=false;Width=280;
+        Font=AppTypography.TrayFont(10);Padding=new Forms.Padding(7);AutoSize=false;Width=280;
         Items.Add(new Forms.ToolStripLabel(preview?"Preview mode":"Curfew controls") { Tag="header",AutoSize=false,Size=new Size(264,52) });
         Add("Open settings","\uE713",open);
         visibilityItem=Add("Hide island","\uE890",toggle);
@@ -45,7 +45,7 @@ public sealed class BreakpointTrayMenu : Forms.ContextMenuStrip
 
     private sealed class MenuRenderer : Forms.ToolStripRenderer,IDisposable
     {
-        private readonly Font glyph=new("Segoe MDL2 Assets",11),heading=new("Segoe UI",10,FontStyle.Bold),caption=new("Segoe UI",8.5f),pinFont=new("Segoe UI",8);
+        private readonly Font glyph=new("Segoe MDL2 Assets",11),heading=AppTypography.TrayFont(10,FontStyle.Bold),caption=AppTypography.TrayFont(8.5f),pinFont=AppTypography.TrayFont(8);
         private readonly Bitmap logo;
         public MenuRenderer(){using var icon=BrandAssets.TrayIcon();logo=icon.ToBitmap();}
         private bool Contrast=>Forms.SystemInformation.HighContrast;

@@ -23,7 +23,7 @@ public partial class App : System.Windows.Application
         base.OnStartup(e);
         if(e.Args.Contains("--package-check"))
         {
-            try{if(!File.Exists(Path.Combine(AppContext.BaseDirectory,"Breakpoint.Service.exe")))throw new IOException("Companion service is missing.");_ = BrandAssets.WindowIcon();using var icon=BrandAssets.TrayIcon();Shutdown(0);}
+            try{if(!File.Exists(Path.Combine(AppContext.BaseDirectory,"Breakpoint.Service.exe")))throw new IOException("Companion service is missing.");_ = BrandAssets.WindowIcon();using var icon=BrandAssets.TrayIcon();if(!new Typeface(AppTypography.Family,FontStyles.Normal,FontWeights.Normal,FontStretches.Normal).TryGetGlyphTypeface(out var font)||!font.FamilyNames.Values.Contains("ABC Areal"))throw new IOException("Packaged Areal font is missing.");using var trayFont=AppTypography.TrayFont(10);Shutdown(0);}
             catch{Shutdown(1);}return;
         }
         Preview = e.Args.Contains("--preview")||File.Exists(Path.Combine(AppContext.BaseDirectory,"portable-preview.flag"));
