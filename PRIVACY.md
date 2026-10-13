@@ -34,7 +34,7 @@ Uninstall removes the service and its owned firewall rules, but deliberately ret
 
 ## Transmission and sharing
 
-The shipped app has no built-in analytics, advertising, cloud account, remote administration, automatic update check, or automatic crash-report upload. It does not send its local policy, PIN hashes, or service logs to iguessrob. The desktop and service exchange commands and status through a local Windows named pipe.
+The shipped app has no built-in analytics, advertising, cloud account, remote administration, automatic update check, or automatic crash-report upload. It does not send its local policy, PIN hashes, or service logs to iguessrob or any external servers. The desktop and service exchange commands and status through a local Windows named pipe.
 
 If you download a release, open a GitHub page, or submit an issue, GitHub processes that interaction under its own terms. Information you voluntarily submit is available to the publisher and people who can access that repository. An issue may be public if the repository is public. Do not post PINs, recovery codes, complete state files, personal account names, or unredacted logs. The repository does not currently provide a dedicated private contact channel for sensitive privacy reports.
 

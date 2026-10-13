@@ -77,4 +77,6 @@ Read [usage and recovery instructions](docs/getting-started.md) or the [architec
 
 ## Privacy and terms
 
-Read the [privacy policy](PRIVACY.md) and [terms and conditions](TERMS.md) before installing. The installer displays both documents and includes offline copies in the installed folder. The publisher is iguessrob; contact is through [GitHub Issues](https://github.com/iguessrob/breakpoint/issues).
+Please review the Privacy Policy and Terms and Conditions before installing. The installer displays both documents and places offline copies into the installation folder.
+
+If you have questions or encounter issues, reach out via GitHub Issues.
